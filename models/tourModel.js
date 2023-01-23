@@ -42,7 +42,16 @@ const tourSchema = new mongoose.Schema(
       type: Number,
       required: [true, 'A tour must have a price'],
     },
-    priceDiscount: Number,
+    priceDiscount: {
+      type: Number,
+      validate: {
+        validator: function (val) {
+          // this only points to current doc on NEW document creation
+          return val < this.price;
+        },
+        message: 'Dicount price ({VALUE}) should be below regular price',
+      },
+    },
     summary: {
       type: String,
       trim: true,
@@ -105,7 +114,7 @@ tourSchema.pre(/^find/, function (next) {
 });
 
 // .post() middleware are executed after the query has already been executed
-tourSchema.post(/^find/, function (docs, next) {
+tourSchema.post(/^find/, function (_, next) {
   console.log(`Query took ${Date.now() - this.start} milliseconds!`);
   next();
 });
