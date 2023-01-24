@@ -41,9 +41,7 @@ exports.createTour = catchAsync(async (req, res, next) => {
 
   res.status(201).json({
     status: 'success',
-    data: {
-      tour: newTour,
-    },
+    data: { tour: newTour },
   });
 });
 
@@ -55,9 +53,7 @@ exports.updateTour = catchAsync(async (req, res, next) => {
 
   res.status(200).json({
     status: 'success',
-    data: {
-      tour,
-    },
+    data: { tour },
   });
 });
 
@@ -126,9 +122,7 @@ exports.getMonthlyPlan = catchAsync(async (req, res, next) => {
       $addFields: { month: '$_id' },
     },
     {
-      $project: {
-        _id: 0,
-      },
+      $project: { _id: 0 },
     },
     {
       $sort: { numTourStarts: -1 },
