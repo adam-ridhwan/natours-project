@@ -9,7 +9,8 @@ const signToken = (id) =>
   });
 
 exports.signup = catchAsync(async (req, res, next) => {
-  //! This is not secure, because we are allowing the user to send any data they want to the database. We need to filter out the data that we want to allow the user to send to the database.
+  //! This is not secure, because we are allowing the user to send any data they want to the database.
+  //! We need to filter out the data that we want to allow the user to send to the database.
   // const newUser = await User.create(req.body)
 
   const newUser = await User.create({
