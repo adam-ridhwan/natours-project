@@ -54,9 +54,7 @@ exports.protect = catchAsync(async (req, res, next) => {
     token = req.headers.authorization.split(' ')[1];
   }
 
-  if (!token) {
-    return next(new AppError('You are not logged in!', 401));
-  }
+  if (!token) return next(new AppError('You are not logged in!', 401));
 
   // 2) Verification token
   const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
@@ -72,9 +70,8 @@ exports.protect = catchAsync(async (req, res, next) => {
     );
 
   // 4) Check if user changed password after the token was issued
-  if (currentUser.changedPasswordAfter(decoded.iat)) {
+  if (currentUser.changedPasswordAfter(decoded.iat))
     return next(new AppError('User recently changed password!', 401));
-  }
 
   // GRANT ACCESS TO PROTECTED ROUTE
   req.user = currentUser;
@@ -92,3 +89,18 @@ exports.restrictTo =
 
     next();
   };
+
+exports.forgotPassword = catchAsync(async (req, res, next) => {
+  // 1) Get user based on POSTed email
+  const user = await User.findOne({ email: req.body.email });
+  if (!user)
+    return next(new AppError('There is no user with email address.', 404));
+
+  // 2) Generate the random reset token
+  const resetToken = user.createPasswordResetToken();
+  await user.save({ validateBeforeSave: false });
+
+  // 3) Send it to user's email
+});
+
+exports.resetPassword = (req, res, next) => {};
